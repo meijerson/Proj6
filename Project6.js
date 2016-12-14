@@ -17,13 +17,14 @@ function main() {
     printNewMasterFile();
     printErrorReport();
     printCoupons();
+    writeNewMasterFile();
 }
 
 main();
 
 function populateMasterFile() {
     let fileContents = IO.readFileSync(`master.csv`, 'utf8');
-    let lines = fileContents.toString().split(/\r?\n/); // Automatically creates SD array on newlines
+    let lines = fileContents.toString().split(/\r?\n/);
     for (let i = 0; i < lines.length; i++) {
         masterFile.push(lines[i].toString().split(/,/));
     }
@@ -55,7 +56,12 @@ function printNewMasterFile() {
     const COLUMNS = 4;
     for (let i = 0; i < masterFile.length; i++) {
         for (let j = 0; j < COLUMNS; j++) {
-            console.log(masterFile[i][j]);
+            if (j == 3) {
+                console.log(`$${masterFile[i][j]}`);
+            }
+            else {
+                console.log(masterFile[i][j]);
+            }
         }
         console.log(`\n`);
     }
@@ -79,5 +85,19 @@ function printCoupons() {
             console.log(`\n\tYou have surpassed $750 in purchases at the Curl Up and Dye Beauty Salon!\n\tRedeem this coupon at any point for a free hair cut.`);
             console.log(`\n\tExpires: Tomorrow.\n\tThank you for your business!\n\t____________________________________`);
         }
+    }
+}
+
+function writeNewMasterFile() {
+    const COLUMNS = 4;
+    for (let i = 0; i < masterFile.length; i++) {
+        for (let j = 0; j < COLUMNS; j++) {
+            if (j < COLUMNS - 1) {
+                IO.appendFileSync(`newMaster.csv`, `${masterFile[i][j]},`, 'utf8');
+            } else {
+                IO.appendFileSync(`newMaster.csv`, masterFile[i][j], 'utf8');
+            }
+        }
+        IO.appendFileSync(`newMaster.csv`, "\n", 'utf8');
     }
 }
